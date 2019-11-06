@@ -360,7 +360,25 @@ func ExampleEvaluate_jsonpath() {
 	// 100
 }
 
-func ExampleEvaluate_jsonpath_array() {
+func ExampleEvaluate_jsonpath_array_not_equal() {
+
+	value, err := gval.Evaluate(`$.a[*] != 2`,
+		map[string]interface{}{
+			"a": map[string]interface{}{"id": 1},
+		},
+		jsonpath.Language(),
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Print(value)
+
+	// Output:
+	// true
+}
+
+func ExampleEvaluate_jsonpath_array_equal() {
 
 	value, err := gval.Evaluate(`$.a[*] == 1`,
 		map[string]interface{}{
@@ -375,7 +393,7 @@ func ExampleEvaluate_jsonpath_array() {
 	fmt.Print(value)
 
 	// Output:
-	// 100
+	// true
 }
 
 func ExampleLanguage() {
