@@ -363,7 +363,7 @@ func TestModifierTyping(test *testing.T) {
 		{
 			name:       "eval `nil > 1` returns true #23",
 			expression: `nil > 1`,
-			wantErr:    "invalid operation (<nil>) > (float64)",
+			wantErr:    "invalid operation",
 		},
 	}
 

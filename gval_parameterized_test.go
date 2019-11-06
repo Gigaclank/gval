@@ -592,6 +592,24 @@ func TestParameterized(t *testing.T) {
 				},
 				want: 1.,
 			},
+			// {
+			// 	name:       "json array wildcard contains",
+			// 	expression: `$.a[*].Id == 2`,
+			// 	parameter: map[string]interface{}{
+			// 		"a": map[string]interface{}{"Id": 2}, {"Id": 3},
+			// 	},
+			// 	extension: jsonpath.Language(),
+			// 	want:      true,
+			// },
+			// {
+			// 	name:       "json array wildcard contains",
+			// 	expression: `$.a[*].Id == 2`,
+			// 	parameter: map[string]interface{}{
+			// 		"a": map[string]interface{}{"Id": 4}, {"Id": 5},
+			// 	},
+			// 	extension: jsonpath.Language(),
+			// 	want:      false,
+			// },
 		},
 		t,
 	)

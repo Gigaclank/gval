@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/PaesslerAG/gval"
+	"github.com/Gigaclank/gval"
 	"github.com/PaesslerAG/jsonpath"
 )
 
@@ -347,6 +347,24 @@ func ExampleEvaluate_jsonpath() {
 	value, err := gval.Evaluate(`$["response-time"]`,
 		map[string]interface{}{
 			"response-time": 100,
+		},
+		jsonpath.Language(),
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Print(value)
+
+	// Output:
+	// 100
+}
+
+func ExampleEvaluate_jsonpath_array() {
+
+	value, err := gval.Evaluate(`$.a[*] == 1`,
+		map[string]interface{}{
+			"a": map[string]interface{}{"id": 1},
 		},
 		jsonpath.Language(),
 	)

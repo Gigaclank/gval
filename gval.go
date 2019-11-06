@@ -7,6 +7,7 @@ package gval
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"reflect"
@@ -223,8 +224,54 @@ var base = NewLanguage(
 	Constant("true", true),
 	Constant("false", false),
 
-	InfixOperator("==", func(a, b interface{}) (interface{}, error) { return reflect.DeepEqual(a, b), nil }),
-	InfixOperator("!=", func(a, b interface{}) (interface{}, error) { return !reflect.DeepEqual(a, b), nil }),
+	InfixOperator("==", func(a, b interface{}) (interface{}, error) {
+		aa, ok := a.([]interface{})
+		if !ok {
+			return reflect.DeepEqual(a, b), nil
+		}
+		for _, x := range aa {
+			if reflect.DeepEqual(x, b) {
+				return true, nil
+			}
+		}
+		return false, nil
+	}),
+	InfixOperator("!=", func(a, b interface{}) (interface{}, error) {
+		aa, ok := a.([]interface{})
+		if !ok {
+			return !reflect.DeepEqual(a, b), nil
+		}
+		for _, x := range aa {
+			if !reflect.DeepEqual(x, b) {
+				return true, nil
+			}
+		}
+		return false, nil
+	}),
+	// InfixOperator(">", func(a, b interface{}) (interface{}, error) {
+	// 	aa, ok := a.([]interface{})
+	// 	if !ok {
+	// 		return compareGreaterThan(a, b)
+	// 	}
+	// 	for _, x := range aa {
+	// 		if val, err := compareGreaterThan(x, b); val == true {
+	// 			return true, err
+	// 		}
+	// 	}
+	// 	return false, nil
+	// }),
+	// InfixOperator(">=", func(a, b interface{}) (interface{}, error) {
+	// 	aa, ok := a.([]interface{})
+	// 	if !ok {
+	// 		return compareGreaterEqualThan(a, b)
+	// 	}
+	// 	for _, x := range aa {
+	// 		if val, err := compareGreaterEqualThan(x, b); val == true {
+	// 			return true, err
+	// 		}
+	// 	}
+	// 	return false, nil
+	// }),
 	PrefixExtension('(', parseParentheses),
 
 	Precedence("??", 0),
@@ -260,3 +307,200 @@ var base = NewLanguage(
 
 	PrefixMetaPrefix(scanner.Ident, parseIdent),
 )
+
+func compareGreaterThan(a, b interface{}) (val interface{}, err error) {
+
+	if a == nil || b == nil {
+
+		val = errors.New("invalid operation")
+		return
+
+	}
+	typeA := reflect.TypeOf(a)
+	typeB := reflect.TypeOf(b)
+	fmt.Println(typeA.Kind())
+
+	if typeA.Kind() != typeB.Kind() {
+		val = "invalid operation (" + typeA.Kind().String() + ") > (" + typeB.Kind().String() + ")"
+		return
+	}
+	switch typeA.Kind() {
+	case reflect.Int:
+		val = a.(int) > b.(int)
+		break
+	case reflect.Int8:
+		val = a.(int8) > b.(int8)
+		break
+	case reflect.Int16:
+		val = a.(int16) > b.(int16)
+		break
+	case reflect.Int32:
+		val = a.(int32) > b.(int32)
+		break
+	case reflect.Int64:
+		val = a.(int64) > b.(int64)
+		break
+	case reflect.Uint:
+		val = a.(uint) > b.(uint)
+		break
+	case reflect.Uint8:
+		val = a.(uint8) > b.(uint8)
+		break
+	case reflect.Uint16:
+		val = a.(uint16) > b.(uint16)
+		break
+	case reflect.Uint32:
+		val = a.(uint32) > b.(uint32)
+		break
+	case reflect.Uint64:
+		val = a.(uint64) > b.(uint64)
+		break
+	case reflect.Float32:
+		val = a.(float32) > b.(float32)
+		break
+	case reflect.Float64:
+		val = a.(float64) > b.(float64)
+		break
+	default:
+		val = false
+		break
+	}
+	return
+}
+
+func compareGreaterEqualThan(a, b interface{}) (val interface{}, err error) {
+
+	if a == nil || b == nil {
+
+		val = errors.New("invalid operation")
+		return
+
+	}
+	typeA := reflect.TypeOf(a)
+	typeB := reflect.TypeOf(b)
+
+	if typeA.Kind() != typeB.Kind() {
+		val = errors.New("invalid operation")
+		return
+	}
+	switch typeA.Kind() {
+	case reflect.Bool:
+		val = a.(bool) == b.(bool)
+		break
+	case reflect.Int:
+		val = a.(int) >= b.(int)
+		break
+	case reflect.Int8:
+		val = a.(int8) >= b.(int8)
+		break
+	case reflect.Int16:
+		val = a.(int16) >= b.(int16)
+		break
+	case reflect.Int32:
+		val = a.(int32) >= b.(int32)
+		break
+	case reflect.Int64:
+		val = a.(int64) >= b.(int64)
+		break
+	case reflect.Uint:
+		val = a.(uint) >= b.(uint)
+		break
+	case reflect.Uint8:
+		val = a.(uint8) >= b.(uint8)
+		break
+	case reflect.Uint16:
+		val = a.(uint16) >= b.(uint16)
+		break
+	case reflect.Uint32:
+		val = a.(uint32) >= b.(uint32)
+		break
+	case reflect.Uint64:
+		val = a.(uint64) >= b.(uint64)
+		break
+	case reflect.Float32:
+		val = a.(float32) >= b.(float32)
+		break
+	case reflect.Float64:
+		val = a.(float64) >= b.(float64)
+		break
+	}
+	return
+}
+
+func compareLessThan(a, b interface{}) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	typeA := reflect.TypeOf(a)
+	typeB := reflect.TypeOf(b)
+	if typeA != typeB {
+		return false
+	}
+	switch typeA.Kind() {
+	case reflect.Int:
+		return a.(int) < b.(int)
+	case reflect.Int8:
+		return a.(int8) < b.(int8)
+	case reflect.Int16:
+		return a.(int16) < b.(int16)
+	case reflect.Int32:
+		return a.(int32) < b.(int32)
+	case reflect.Int64:
+		return a.(int64) < b.(int64)
+	case reflect.Uint:
+		return a.(uint) < b.(uint)
+	case reflect.Uint8:
+		return a.(uint8) < b.(uint8)
+	case reflect.Uint16:
+		return a.(uint16) < b.(uint16)
+	case reflect.Uint32:
+		return a.(uint32) < b.(uint32)
+	case reflect.Uint64:
+		return a.(uint64) < b.(uint64)
+	case reflect.Float32:
+		return a.(float32) < b.(float32)
+	case reflect.Float64:
+		return a.(float64) < b.(float64)
+
+	}
+	return false
+}
+
+func compareLessEqualThan(a, b interface{}) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	typeA := reflect.TypeOf(a)
+	typeB := reflect.TypeOf(b)
+	if typeA != typeB {
+		return false
+	}
+	switch typeA.Kind() {
+	case reflect.Int:
+		return a.(int) <= b.(int)
+	case reflect.Int8:
+		return a.(int8) <= b.(int8)
+	case reflect.Int16:
+		return a.(int16) <= b.(int16)
+	case reflect.Int32:
+		return a.(int32) <= b.(int32)
+	case reflect.Int64:
+		return a.(int64) <= b.(int64)
+	case reflect.Uint:
+		return a.(uint) <= b.(uint)
+	case reflect.Uint8:
+		return a.(uint8) <= b.(uint8)
+	case reflect.Uint16:
+		return a.(uint16) <= b.(uint16)
+	case reflect.Uint32:
+		return a.(uint32) <= b.(uint32)
+	case reflect.Uint64:
+		return a.(uint64) <= b.(uint64)
+	case reflect.Float32:
+		return a.(float32) <= b.(float32)
+	case reflect.Float64:
+		return a.(float64) <= b.(float64)
+
+	}
+	return false
+}
