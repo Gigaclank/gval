@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Gigaclank/gval"
-	"github.com/PaesslerAG/jsonpath"
+	"github.com/Gigaclank/jsonpath"
 )
 
 func Example() {
